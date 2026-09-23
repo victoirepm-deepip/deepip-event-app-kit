@@ -24,14 +24,16 @@ it is where the field lessons from Munich and Budapest are recorded.
 |---|---|
 | `CLAUDE.md` | The contract. Rules, interview, architecture, checklist. |
 | `config.template.js` | Copy to `config.js` and fill. The only file you edit per event. |
-| `PORTING.md` | One-off task list to bring the engine in from `ficpi-field`. |
+| `Code.gs` | Apps Script backend. Only the configuration block at the top changes per event. |
+| `PORTING.md` | One-off task list to bring the frontend engine in from `ficpi-field`. |
 | `appsscript.json` | Apps Script manifest. Only `timeZone` changes, per event. |
 
 ## State of this repo
 
-The engine (`store.js`, `auth.js`, `sync.js`, `model.js`, `ui.js`, `app.js`,
-`Code.gs`) is not in here yet. It exists, proven in the field, in the private repo
-`ficpi-field`, and has to be ported once, following `PORTING.md`.
+`Code.gs` is here and ready. The frontend engine (`store.js`, `auth.js`, `sync.js`,
+`model.js`, `ui.js`, `app.js` and the shell files) is not. It exists, proven in the
+field, in the private repo `ficpi-field`, and has to be ported once, following
+`PORTING.md`.
 
 That port is the first job to run in Claude Code on this repo. It is deliberately
 not a copy and paste: `ficpi-field` has event-specific behaviour hardcoded where

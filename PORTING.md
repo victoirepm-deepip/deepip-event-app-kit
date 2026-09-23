@@ -28,36 +28,26 @@ build step and say so in `README.md`.
 
 Commit this as one commit, on its own, so the diff of step 3 is readable.
 
-## 2. Bring in `Code.gs`
+## 2. `Code.gs` is already here
 
-Copy the FICPI `Code.gs` into this repo as `Code.gs`. It is the good version:
-tab resolution by name then loose name then shape, header row found by scoring,
-columns resolved by header text with aliases, append-only writes made idempotent
-on a client-generated `Client ID`, token verified server side.
+Nothing to port. `Code.gs` in this repo is the FICPI engine, already generalised:
+configuration blanked, column maps reduced to a reusable default, names split into
+`First name` and `Last name` on the write tab, `practitioners` added as an extra
+capture field, `selfTest()` warnings freed of hardcoded dates.
 
-Do **not** take the Munich version of this file. It writes by row number and has
-no idempotency, which does not survive an offline queue that retries.
+Do **not** replace it with the Munich version of the same file, which writes by row
+number and has no idempotency, and does not survive an offline queue that retries.
 
-Then blank it for reuse:
+What the frontend must now match, because `Code.gs` already assumes it:
 
-- `SHEET_ID`: empty string.
-- `CLIENT_ID`: keep the placeholder text, not a real client ID.
-- `TAB_NAMES`: empty arrays with a comment showing the FICPI values as an example.
-- `CONTACT_COLUMNS`, `DIRECTORY_COLUMNS`, `ENCOUNTER_COLUMNS`: this is the part that
-  changes per event. Keep the full FICPI maps, commented out, directly below an
-  empty map, so the next person can see a real worked example rather than invent one
-  from scratch. Keep every comment explaining why a given alias or ordering exists,
-  in particular the `metBy` before `met` ordering and the `Firm (as declared)` alias.
-- `ENCOUNTER_COLUMNS`: replace the single `fullName` entry with `firstName` and
-  `lastName`. `lastName` is the required one, `firstName` is optional. The guard at
-  the end of `encounterToRow` currently throws on an empty `fullName`: point it at
-  `lastName`. Check `buildEncounters` and every read path in `model.js` and `ui.js`
-  for the same assumption, including the display name used on cards and in search.
-- Add the extra capture fields declared in `CAPTURE_EXTRA` in config, starting with
-  `practitioners`, as optional entries in `ENCOUNTER_COLUMNS`. The capture form
-  renders core fields first, extras after, in declaration order.
-- `selfTest()`: keep it, including the data-quality counts at the end. Generalise the
-  hardcoded dates in its warnings ("the morning of the 16th") to read from the config.
+- The encounter payload carries `lastName` and `firstName`, never `fullName`.
+  `lastName` is the required one. Check every read path in `model.js`, `ui.js` and
+  `app.js` for the old assumption, including the display name on cards and in
+  search, and the capture form itself.
+- The encounter payload carries `practitioners`, and the capture form renders the
+  core fields first, then the extras declared in `CAPTURE_EXTRA`, in order.
+- The directory keeps a single `fullName`: a second list is usually a supplied file
+  with one name column, and we do not split what we did not collect.
 
 ## 3. Replace hardcoded event behaviour with phases
 
