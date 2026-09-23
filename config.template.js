@@ -98,13 +98,21 @@ const USERS = {
 
 /* ---- Capture form ----------------------------------------------------- */
 /*
-  This is not cosmetic. These five fields are the input contract of the follow-up
-  page: `temperature`, `toolToday`, `nextStep` and the free-text hook are what the
-  draft emails are written from. Change the picklists if the event calls for it,
-  but keep the five fields.
+  Two layers, and the difference matters.
+
+  CORE. The five fields below are the input contract of the follow-up page:
+  temperature, toolToday, nextStep and the free-text hook are what the draft
+  emails are written from. Change the picklists to fit the event. Do not remove a
+  core field: the generator stops working and nobody notices until the day after.
+
+  EXTRA. Anything else this event's owner wants the team to bring back. Adding
+  fields is free, and it is asked for explicitly in the phase A interview. Each
+  extra field becomes its own column on the write tab, and its own entry in
+  ENCOUNTER_COLUMNS in Code.gs.
 
   Keep every list short enough to be a single tap on a phone held in one hand,
-  in a room, standing.
+  in a room, standing. Every field added is a field somebody has to fill while
+  talking to a stranger, so the real cost is not screen space.
 */
 const CAPTURE_OPTIONS = {
   met:         ["Yes", "No", "Not seen"],
@@ -114,6 +122,35 @@ const CAPTURE_OPTIONS = {
   // Tutors only. One tap, no text: someone teaching all day will not type a sentence.
   observation: ["Engaged", "Asked a good question", "Already using a tool", "Stuck on something"]
 };
+
+/* Extra fields, per event. Asked for in the phase A interview: "what do you want
+   the team to bring back from the floor that we do not already have?"
+
+   Each one lands in its own column on the write tab, under the exact `header`
+   given here, and needs a matching entry in ENCOUNTER_COLUMNS in Code.gs.
+
+     key      the field name in the payload
+     label    what the salesperson reads on the phone
+     header   the column header on the write tab. Once the Sheet is live this
+              string is frozen, like every other header.
+     type     "number" | "text" | "choice"
+     options  for "choice" only
+
+   `practitioners` is here rather than in the core because it is not a property of
+   the encounter, it is a property of the firm. Several people will answer it for
+   the same firm, possibly differently. It is written on the encounter row like
+   everything else, never updated in place, and reconciled into the Firms tab
+   afterwards. That reconciliation is where it earns its keep: firm size is a
+   scoring input for the next event.
+*/
+const CAPTURE_EXTRA = [
+  {
+    key: "practitioners",
+    label: "How many practitioners at the firm?",
+    header: "Practitioners",
+    type: "number"
+  }
+];
 
 // Naming the incumbent is often the only competitive signal an event produces, so
 // the list is worth curating per event. Names only. Never annotate a competitor

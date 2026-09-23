@@ -76,6 +76,14 @@ Never break these. They are not preferences.
   with no default filter. An event is not the place to lock someone out.
 - Losing a capture is worse than losing a field. A missing optional column degrades the
   row and raises a warning, it never fails the write.
+- **Names are stored split.** The write tab carries `First name` and `Last name` in
+  separate columns, never a single `Full name`. Splitting afterwards is guesswork on
+  particles, double barrels and reversed order, and it has to be redone on every
+  export. `Last name` is the required one: a card read in a noisy room sometimes
+  yields only a surname, and that row is still worth writing.
+- **Capture fields are core plus extra.** The five core fields are the input contract
+  of the follow-up generator and are never removed. Extra fields are added per event,
+  from the phase A interview, each with its own frozen column header.
 
 ---
 
@@ -95,6 +103,10 @@ Ask them together, in one message, numbered. No default covers any of them.
 4. **People on the floor**: name, email, and for each one, does she or he have an
    assigned list, and is it a tutor-type role (someone who observes people working,
    whose signal is worth its own field)?
+4b. **What the team must bring back**: beyond the five core fields, what do you want
+   them to capture on site that we do not already have? Ask it in those words, with
+   an example or two, because "which extra columns do you want" gets an empty answer
+   and "what would you want to know about a firm you just met" does not.
 5. **The Sheet**: does it exist yet? If yes, give the tab names and paste the header
    row of each tab. If no, the kit generates the template and the interview stops
    until it is filled.

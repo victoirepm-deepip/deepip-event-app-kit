@@ -48,6 +48,14 @@ Then blank it for reuse:
   empty map, so the next person can see a real worked example rather than invent one
   from scratch. Keep every comment explaining why a given alias or ordering exists,
   in particular the `metBy` before `met` ordering and the `Firm (as declared)` alias.
+- `ENCOUNTER_COLUMNS`: replace the single `fullName` entry with `firstName` and
+  `lastName`. `lastName` is the required one, `firstName` is optional. The guard at
+  the end of `encounterToRow` currently throws on an empty `fullName`: point it at
+  `lastName`. Check `buildEncounters` and every read path in `model.js` and `ui.js`
+  for the same assumption, including the display name used on cards and in search.
+- Add the extra capture fields declared in `CAPTURE_EXTRA` in config, starting with
+  `practitioners`, as optional entries in `ENCOUNTER_COLUMNS`. The capture form
+  renders core fields first, extras after, in declaration order.
 - `selfTest()`: keep it, including the data-quality counts at the end. Generalise the
   hardcoded dates in its warnings ("the morning of the 16th") to read from the config.
 
