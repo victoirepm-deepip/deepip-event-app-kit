@@ -175,14 +175,36 @@ const UI = (() => {
     const flag = Model.topFlag(p);
     const prio = Model.priority(p).value;
     const met = Model.isMet(p, app.ctx.index);
-    // Level 1 is one line and stays one line: five fixed grid cells, no wrapping.
-    return `<a class="row ${met ? "row-seen" : ""}" href="#/person/${encodeURIComponent(Model.contactKey(p))}">
+    // The first line is one line and stays one line: five fixed grid cells, no
+    // wrapping. An event can add a second line of tags (LIST_FIELDS in config.js);
+    // with none configured, or none filled for this person, the row is one line.
+    const tags = listTags(p);
+    return `<a class="row ${met ? "row-seen" : ""}${tags ? " row-2l" : ""}" href="#/person/${encodeURIComponent(Model.contactKey(p))}">
       <span class="row-flag ${flag ? "flag-" + flag.key : ""}" title="${flag ? esc(flag.label) : ""}">${flag ? flag.icon : ""}</span>
       <span class="row-name">${esc(Model.fullName(p))}</span>
       <span class="row-firm">${esc(c(p.firm))}</span>
       <span class="row-prio ${prio ? "p" + prio : ""}">${prio ? "P" + prio : ""}</span>
       <span class="row-check" title="${met ? "Met" : "Not yet met"}">${met ? "✓" : ""}</span>
+      ${tags}
     </a>`;
+  }
+
+  /**
+   * The second line of a list row, from LIST_FIELDS. A field with `flag` is a
+   * yes/no column: it shows its short label when the cell says yes, and nothing
+   * otherwise. Any other field shows its value. Empty stays empty.
+   */
+  const YES = /^(yes|y|true|1|x|oui)$/i;
+  const NO = /^(no|n|false|0|non)$/i;
+  function listTags(p) {
+    const fields = typeof LIST_FIELDS !== "undefined" ? LIST_FIELDS : [];
+    const bits = fields.map(f => {
+      const v = c(p[f.key]);
+      if (!v || NO.test(v)) return "";
+      if (f.flag) return YES.test(v) ? `<span class="tag tag-flag">${esc(f.flag)}</span>` : `<span class="tag">${esc(f.flag)}: ${esc(v)}</span>`;
+      return `<span class="tag">${esc(v)}</span>`;
+    }).filter(Boolean);
+    return bits.length ? `<span class="row-tags">${bits.join("")}</span>` : "";
   }
 
   function emptyList(app, active) {

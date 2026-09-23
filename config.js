@@ -25,7 +25,7 @@ const EVENT = {
   // one origin never share storage.
   slug: "ipoam26",
   // Bump on every deployment.
-  shellVersion: 2,
+  shellVersion: 3,
   // Must equal timeZone in appsscript.json and the Sheet's File > Settings > Time zone.
   timezone: "America/Toronto",
 
@@ -138,6 +138,17 @@ const CARD_FIELDS = [
   { key: "targetAccount",    label: "Target account" },
   { key: "competitor",       label: "Competitor" },
   { key: "competitorClient", label: "Competitor's client" }
+];
+
+/* Same six columns as tags under each row of the list (asked 23 Sept). Yes/no
+   columns show their short label only when yes. */
+const LIST_FIELDS = [
+  { key: "orgType" },
+  { key: "accountStatus" },
+  { key: "openDeal",         flag: "Open/won deal" },
+  { key: "targetAccount",    flag: "Target account" },
+  { key: "competitor" },
+  { key: "competitorClient", flag: "Competitor's client" }
 ];
 
 /* ---- Sync and freshness ----------------------------------------------- */
