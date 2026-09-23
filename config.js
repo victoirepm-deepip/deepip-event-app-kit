@@ -25,7 +25,7 @@ const EVENT = {
   // one origin never share storage.
   slug: "ipoam26",
   // Bump on every deployment.
-  shellVersion: 1,
+  shellVersion: 2,
   // Must equal timeZone in appsscript.json and the Sheet's File > Settings > Time zone.
   timezone: "America/Toronto",
 
@@ -126,6 +126,19 @@ const FOLLOW_UP = {
     "after":   "booth"
   }
 };
+
+/* ---- Contact card ----------------------------------------------------- */
+/* Attendee List columns shown on the card, in this order (asked 23 Sept).
+   Lifecycle is the engine's accountStatus: listed here, it leaves the one-line
+   summary. Lifecycle "Customer" still raises the customer banner. */
+const CARD_FIELDS = [
+  { key: "orgType",          label: "Organization type" },
+  { key: "accountStatus",    label: "Lifecycle" },
+  { key: "openDeal",         label: "Has open or won deal" },
+  { key: "targetAccount",    label: "Target account" },
+  { key: "competitor",       label: "Competitor" },
+  { key: "competitorClient", label: "Competitor's client" }
+];
 
 /* ---- Sync and freshness ----------------------------------------------- */
 

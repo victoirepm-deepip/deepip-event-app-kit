@@ -230,9 +230,17 @@ const UI = (() => {
       </section>`;
 
     /* 3 — why they matter. One line. */
-    const why = [prio, c(p.accountStatus), c(p.tiering)].filter(Boolean);
+    const cardFields = typeof CARD_FIELDS !== "undefined" ? CARD_FIELDS : [];
+    const onCard = new Set(cardFields.map(f => f.key));
+    const why = [prio, onCard.has("accountStatus") ? "" : c(p.accountStatus),
+                 onCard.has("tiering") ? "" : c(p.tiering)].filter(Boolean);
     const matter = why.length
       ? `<section class="block block-why"><p>${why.map(esc).join(" · ")}</p></section>` : "";
+
+    /* 3b — event-specific columns (CARD_FIELDS in config.js). Label: value,
+       only the ones with a value. */
+    const glanceRows = cardFields.map(f => field(f.label, p[f.key])).join("");
+    const glance = glanceRows ? `<section class="block block-glance">${glanceRows}</section>` : "";
 
     /* 4 — what to say. The main block; it gets the room.
        Precedence lives in Model.whatToSay so it can be tested: the prepared
@@ -287,7 +295,7 @@ const UI = (() => {
         ${thread.map(encounterLine).join("")}
       </section>` : "";
 
-    return screen("", banner + who + matter + whatToSay + action + threadBlock +
+    return screen("", banner + who + matter + glance + whatToSay + action + threadBlock +
                       account + engagementBlock + firmBlock,
                   { back: history.length > 1 ? "#/list" : "#/" });
   }
