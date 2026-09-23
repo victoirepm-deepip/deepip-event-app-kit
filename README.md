@@ -25,7 +25,7 @@ it is where the field lessons from Munich and Budapest are recorded.
 | `CLAUDE.md` | The contract. Rules, interview, architecture, checklist. |
 | `config.template.js` | Copy to `config.js` and fill. The only file you edit per event. |
 | `PORTING.md` | One-off task list to bring the engine in from `ficpi-field`. |
-| `appsscript.json` | Apps Script manifest. Never changes. |
+| `appsscript.json` | Apps Script manifest. Only `timeZone` changes, per event. |
 
 ## State of this repo
 

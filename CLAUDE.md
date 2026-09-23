@@ -48,6 +48,14 @@ Never break these. They are not preferences.
 **Backend**
 - The Apps Script is **bound to the Sheet** (Extensions > Apps Script from inside it),
   never standalone. That is what allows the `spreadsheets.currentonly` scope.
+- **Three timezones must agree**, and they are set in three different places: the
+  Sheet's own setting (File > Settings > Time zone), `timeZone` in
+  `appsscript.json`, and `EVENT.timezone` in `config.js`. All three are the local
+  timezone of the event, not the timezone of whoever is building it. The Sheet's
+  setting is the one that decides how the Date column reads, so a Paris default on
+  a Toronto event shifts every capture by six hours and fires the phases at the
+  wrong moment. The `Captured at` column is a UTC ISO string and is unaffected,
+  which is exactly why the discrepancy is easy to miss.
 - **POST only.** No `doGet` on any endpoint that reads data. The Google ID token
   travels in the request body, never in a URL.
 - Deployment is `ANYONE_ANONYMOUS` because a domain-restricted deployment returns no
@@ -122,7 +130,7 @@ behaviour or file layout. They have defaults in `config.template.js`.
 ```
 config.js              you always edit this. Generated from the interview.
 Code.gs                the engine. Only the three column maps at the top change.
-appsscript.json        never changes.
+appsscript.json        one line changes per event: timeZone.
 store.js               IndexedDB. Never changes.
 auth.js                Google Identity Services. Never changes.
 sync.js                queue and round-trip. Never changes.
@@ -178,7 +186,8 @@ Run it end to end, on a phone, before handing the app over.
 
 1. Repo is private.
 2. `git grep` for names, emails and account names outside the user table. Nothing.
-3. Apps Script bound to the Sheet, manifest scopes unchanged.
+3. Apps Script bound to the Sheet, manifest scopes unchanged, and `timeZone` in
+   `appsscript.json` equal to `EVENT.timezone` and to the Sheet's own time zone.
 4. `CLIENT_ID` byte-identical in `Code.gs` and `config.js`.
 5. OAuth client authorised origin covers the hosting URL.
 6. `selfTest()` run from the editor, counts read, warnings resolved.

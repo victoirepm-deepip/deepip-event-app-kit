@@ -28,7 +28,13 @@ const GOOGLE_CLIENT_ID = "";
 
 const EVENT = {
   name: "",                    // shown in the header and in the follow-up subject line
-  timezone: "Europe/Paris",    // must match appsscript.json
+  // The local timezone of the EVENT, not of whoever is building this. It is set in
+  // three places and all three must agree: here, timeZone in appsscript.json, and
+  // the Sheet's own setting under File > Settings > Time zone. The Sheet's setting
+  // decides how the Date column reads, so a mismatch shifts every capture by the
+  // offset and fires the phases at the wrong moment. Captured at is a UTC ISO
+  // string and stays correct either way, which is what makes this easy to miss.
+  timezone: "",
 
   /* Phases replace hardcoded dates.
 
