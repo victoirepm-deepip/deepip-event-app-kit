@@ -66,6 +66,13 @@ const UI = (() => {
     return { text: `You are seeing the list as of ${t}. Pull down to refresh.`, level: "fresh" };
   }
 
+  /** Shown by App.updateReconnect only while the Google sign-in has expired. */
+  const reconnectBar = () => `
+    <div id="reconnect-bar" class="reconnect-bar" hidden>
+      <p>Your Google sign-in has expired, so Refresh cannot reach the Sheet. Tap below to reconnect. Nothing on this phone is lost.</p>
+      <div id="reconnect-btn"></div>
+    </div>`;
+
   function renderStatus() {
     const s = Sync.state;
     const bad = s.status === "offline" || s.status === "idle";
@@ -636,6 +643,6 @@ const UI = (() => {
     </main>`;
   }
 
-  return { esc, screen, renderStatus, home, list, person, firm, searchScreen, searchResults,
+  return { esc, screen, renderStatus, reconnectBar, home, list, person, firm, searchScreen, searchResults,
            capture, tonight, summary, settings, signIn, personRow, onsite };
 })();

@@ -137,7 +137,8 @@ const App = {
       default:         body = UI.home(this);
     }
     const y = window.scrollY;
-    document.getElementById("app").innerHTML = `<div id="status">${UI.renderStatus()}</div>${body}`;
+    document.getElementById("app").innerHTML = `<div id="status">${UI.renderStatus()}</div>${UI.reconnectBar()}${body}`;
+    this.updateReconnect();
     window.scrollTo(0, scroll ? 0 : y);
     const q = document.getElementById("q");
     if (q) { q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
@@ -150,6 +151,30 @@ const App = {
   renderStatusOnly() {
     const el = document.getElementById("status");
     if (el) el.innerHTML = UI.renderStatus();
+    this.updateReconnect();
+  },
+
+  /**
+   * The Google ID token lasts an hour, and the silent renewal behind Refresh is
+   * refused by Safari and, often, by Chrome too (FedCM "Error retrieving a
+   * token"). A deliberate tap on Google's own button always works, so while the
+   * sign-in is expired that button sits right under the status bar, not only in
+   * Settings. It lives outside #status, which is repainted every 30 seconds and
+   * would destroy the button; it is only shown or hidden here.
+   */
+  updateReconnect() {
+    const bar = document.getElementById("reconnect-bar");
+    if (!bar) return;
+    const s = Sync.state;
+    // Not tied to status: a background attempt flips it to "syncing" every
+    // minute, and the button must not flicker away under a thumb. lastError is
+    // only cleared by a successful sync, which is exactly when it should go.
+    const expired = s.authState === "stale" && /token/i.test(s.lastError || "");
+    bar.hidden = !expired;
+    const btn = document.getElementById("reconnect-btn");
+    if (expired && btn && !btn.childElementCount) {
+      Auth.renderSignInButton(btn, { prompt: false });
+    }
   },
 
   toast(message) {
