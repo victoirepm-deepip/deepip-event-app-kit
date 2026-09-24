@@ -44,8 +44,12 @@ self.addEventListener("fetch", e => {
 
   // Network-first for our own files so a redeploy is picked up as soon as there is
   // a connection, with the cache as the fallback when there is not.
+  // `no-cache` makes the browser revalidate with the server (a cheap 304 when
+  // nothing changed) instead of reusing its HTTP cache: GitHub Pages sends
+  // max-age=600, so a plain fetch kept serving the previous build for ten
+  // minutes after every publish.
   e.respondWith(
-    fetch(req)
+    fetch(req, { cache: "no-cache" })
       .then(res => {
         const copy = res.clone();
         caches.open(CACHE).then(cache => cache.put(req, copy)).catch(() => {});
