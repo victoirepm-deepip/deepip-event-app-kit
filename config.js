@@ -25,7 +25,7 @@ const EVENT = {
   // one origin never share storage.
   slug: "ipoam26",
   // Bump on every deployment.
-  shellVersion: 3,
+  shellVersion: 5,
   // Must equal timeZone in appsscript.json and the Sheet's File > Settings > Time zone.
   timezone: "America/Toronto",
 
