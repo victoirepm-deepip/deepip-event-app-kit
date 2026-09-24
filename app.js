@@ -76,7 +76,11 @@ const App = {
       // exists solely for the onboarding session before departure.
       document.getElementById("app").innerHTML = UI.signIn();
       Auth.renderSignInButton(document.getElementById("gbtn"));
-      document.addEventListener("auth:changed", () => location.reload(), { once: true });
+      // Carry on in place, do not reload: the ID token from this sign-in lives in
+      // memory only, and a reload threw it away. The app then had to ask Google
+      // for a new one silently, which Safari on iOS does not answer, so the first
+      // sync never ran and the list stayed empty on a phone.
+      document.addEventListener("auth:changed", () => this.boot(), { once: true });
       return;
     }
 
