@@ -25,7 +25,7 @@ const EVENT = {
   // one origin never share storage.
   slug: "ipoam26",
   // Bump on every deployment.
-  shellVersion: 6,
+  shellVersion: 7,
   // Must equal timeZone in appsscript.json and the Sheet's File > Settings > Time zone.
   timezone: "America/Toronto",
 
@@ -149,6 +149,22 @@ const LIST_FIELDS = [
   { key: "targetAccount",    flag: "Target account" },
   { key: "competitor" },
   { key: "competitorClient", flag: "Competitor's client" }
+];
+
+/* Filter chips on the list, in this order (asked 24 Sept). Removed: At the
+   dinner, Not yet met, Firms with several here, Product engagement, Priority 3,
+   and A — Advanced (it reads an AI-maturity column this Sheet does not have).
+   `Competitor's client` holds a competitor's name, so "Using a competitor"
+   means the cell is filled. Priority (P1/P2) is empty today: its chips show 0
+   until it is filled. */
+const LIST_FILTERS = [
+  "mine",
+  "noowner",
+  "p1",
+  "p2",
+  { id: "target",     label: "Target account",     key: "targetAccount",    match: "yes" },
+  { id: "competitor", label: "Using a competitor", key: "competitorClient", match: "filled" },
+  "customers"
 ];
 
 /* ---- Sync and freshness ----------------------------------------------- */

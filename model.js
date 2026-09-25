@@ -289,6 +289,22 @@ const Model = (() => {
   */
 
   function availableFilters(ctx) {
+    const base = baseFilters(ctx);
+    // An event can choose its chips and add its own from Sheet columns
+    // (LIST_FILTERS in config.js). Without it, every built-in chip is offered.
+    const wanted = typeof LIST_FILTERS !== "undefined" ? LIST_FILTERS : null;
+    if (!wanted) return base;
+    const YES = /^(yes|y|true|1|x|oui)$/i, NO = /^(no|n|false|0|non)$/i;
+    return wanted.map(w => {
+      if (typeof w === "string") return base.find(f => f.id === w);
+      const test = w.match === "yes"
+        ? c => YES.test(clean(c[w.key]))
+        : c => has(c[w.key]) && !NO.test(clean(c[w.key]));
+      return { id: w.id, label: w.label, test };
+    }).filter(Boolean);
+  }
+
+  function baseFilters(ctx) {
     const base = [
       { id: "mine",       label: "Assigned to me",        test: c => isMine(c, ctx.me) },
       // Blank ownership is its own group: anyone on the floor can pick it up.
