@@ -44,6 +44,9 @@ h1,h2,h3{margin:0}
 .status-out-waiting{color:var(--amber)}
 .status-in{color:var(--fg2);font-size:12px}
 .status-on.stale .status-in{color:var(--amber)}
+.reconnect-bar{background:var(--bg3);padding:10px 14px 12px;border-bottom:1px solid var(--line)}
+.reconnect-bar[hidden]{display:none}
+.reconnect-bar p{margin:0 0 8px;font-size:14px;color:var(--amber)}
 .banner-refresh{background:var(--bg3);color:var(--amber);padding:10px 14px;font-size:14px;border-bottom:1px solid var(--line)}
 .resync{min-height:44px;min-width:72px}
 .pending{background:var(--amber);color:#20160a;border-radius:10px;padding:2px 8px;font-weight:600;flex:0 0 auto}
