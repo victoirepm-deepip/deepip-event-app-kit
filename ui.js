@@ -268,7 +268,9 @@ const UI = (() => {
 
     /* 3b — event-specific columns (CARD_FIELDS in config.js). Label: value,
        only the ones with a value. */
-    const glanceRows = cardFields.map(f => field(f.label, p[f.key])).join("");
+    // `empty` is the text shown for a blank cell when blank means something
+    // (a blank owner is "No owner"); without it a blank field is not shown.
+    const glanceRows = cardFields.map(f => field(f.label, c(p[f.key]) || f.empty || "")).join("");
     const glance = glanceRows ? `<section class="block block-glance">${glanceRows}</section>` : "";
 
     /* 4 — what to say. The main block; it gets the room.
