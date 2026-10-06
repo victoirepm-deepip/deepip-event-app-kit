@@ -9,7 +9,8 @@
 
 // Filled at deployment (CLAUDE.md section 6, step 7). Remember: editing Code.gs
 // is not deploying it. Manage deployments > pencil > New version > Deploy.
-const APPS_SCRIPT_URL = "";
+// Deployment "AIIPSUMMIT26 v1", 6 Oct 2026.
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz3y1UDSRq2_88BNRyCZRtTZNM1_gBUuYGrNFT-NFKot6K7cFAY-Ud_ezYNHVRAy9D6/exec";
 
 // Shared DeepIP client, reused since Munich. Must be byte-identical to CLIENT_ID
 // in Code.gs. Its authorised origins cover https://victoirepm-deepip.github.io and
