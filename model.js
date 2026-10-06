@@ -328,9 +328,12 @@ const Model = (() => {
   function isMine(c, me) {
     if (!me || !me.ownerNames || !me.ownerNames.length) return false;
     if (/^(yes|y|1|true|x)$/i.test(clean(c.removed))) return false;
-    const owner = norm(c.ownership);
-    if (!owner) return false;
-    return me.ownerNames.some(n => owner.indexOf(norm(n)) > -1);
+    // Which contact columns carry an assignment (OWNER_KEYS in config.js). An event
+    // can assign by owner and by SDR; without it, the ownership column alone.
+    const keys = typeof OWNER_KEYS !== "undefined" && OWNER_KEYS.length ? OWNER_KEYS : ["ownership"];
+    const owners = keys.map(k => norm(c[k])).filter(Boolean);
+    if (!owners.length) return false;
+    return me.ownerNames.some(n => owners.some(o => o.indexOf(norm(n)) > -1));
   }
 
   function applyFilters(contacts, activeIds, ctx) {
