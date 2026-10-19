@@ -50,11 +50,10 @@ var SHEET_ID = ''; // paste the Sheet ID in the bound copy only; kept out of the
 //   directory:  ['2. FICPI Directory', '2. Directory'],
 //   encounters: ['3. On site']
 var TAB_NAMES = {
-  contacts:   ['Attendees List', 'Attendee List'],
-  // No second list at this event: the Attendees List already covers almost the
-  // whole registered audience. Same tab, empty DIRECTORY_COLUMNS below -> empty
-  // directory, no warnings.
-  directory:  ['Attendees List', 'Attendee List'],
+  contacts:   ['Field guide', 'Field Guide'],
+  // No second list at this event: the Field guide is the organiser's final list.
+  // Same tab, empty DIRECTORY_COLUMNS below -> empty directory, no warnings.
+  directory:  ['Field guide', 'Field Guide'],
   encounters: ['Encounters']
 };
 
@@ -80,87 +79,88 @@ var HEADER_SCAN_DEPTH = 25;
 // real header rows of the Sheet. Delete what this event does not have, add what it
 // does, and never rename a header once the Sheet is live.
 
-// AI & IP Summit USA 2026, tab "Attendees List". Keys read by buildContacts, plus
-// any extra key below, which is passed through to the app as is (CARD_FIELDS,
-// LIST_FIELDS and LIST_FILTERS in config.js read them). Keys starting with
-// `guard` are carried for collision guarding only and never sent.
+// VPP Herbstfachtagung 2026, consolidated tab "Field guide" (layer 3). The app
+// never reads the source tabs S1 / S2: both carry header collisions (Lifecycle
+// Stage / Lifecycle Stage 2, duplicated Prospecting SDR and Company owner).
+// Keys read by buildContacts, plus any extra key below, which is passed through
+// to the app as is (CARD_FIELDS, LIST_FIELDS and LIST_FILTERS in config.js read
+// them). Keys starting with `guard` claim a column and are never sent.
 //
-// Collision watch: `Company` prefix-matches `Company Record ID` and `Company Owner`.
-// Those are declared BEFORE `firm`, so if `Company` is ever renamed, `firm` lands on
-// a column that is already claimed and is dropped with a warning, instead of
-// silently reading an owner's name as the firm.
-//
-// Joining key for the follow-up: Email Address lowercased, fallback First Name +
-// Last Name + Company. Phone and LinkedIn columns are deliberately not read.
+// Collision watch, declaration order is priority order:
+//   - `Firm` must not land on `First name`: exact match wins, and `firstName`
+//     is declared first anyway.
+//   - `Ownership` (field zone, hand-filled) and `Company owner` (HubSpot) are
+//     two different columns; neither prefix-matches the other.
+//   - `Priority override` and `Computed priority` are named in full.
+// Not read, on purpose: Key (join key, used at export), LinkedIn, HubSpot
+// contact ID, HubSpot company ID (carried for the CRM import only).
 var CONTACT_COLUMNS = {
-  ownership:       { headers: ['Company Owner'],                 required: false },
-  guardCompanyId:  { headers: ['Company Record ID'],             required: false }, // guard only
-  firm:            { headers: ['Company'],                       required: true  },
-  firstName:       { headers: ['First Name'],                    required: true  },
-  lastName:        { headers: ['Last Name'],                     required: true  },
-  email:           { headers: ['Email Address', 'Email'],        required: false },
-  role:            { headers: ['Job Title'],                     required: false },
-  country:         { headers: ['Country'],                       required: false },
-  sdr:             { headers: ['Prospecting SDR'],               required: false },
+  firstName:        { headers: ['First name'],             required: true  },
+  lastName:         { headers: ['Last name'],              required: true  },
+  firm:             { headers: ['Firm'],                   required: true  },
+  email:            { headers: ['Email'],                  required: false },
+  role:             { headers: ['Job title'],              required: false },
+  organizationType: { headers: ['Organization type'],      required: false },
+  tiering:          { headers: ['Tier'],                   required: false },
+  targetAccount:    { headers: ['Target account'],         required: false },
   // Lifecycle "Customer" raises the customer banner on the card.
-  accountStatus:   { headers: ['Lifecycle'],                     required: false },
-  tiering:         { headers: ['Tiering (New 2026)', 'Tiering'], required: false },
-  openDeal:        { headers: ['Has Open or Won Deal'],          required: false },
-  targetAccount:   { headers: ['Target Account'],                required: false },
-  region:          { headers: ['Region'],                        required: false },
-  competitorClient:{ headers: ["Competitor's client"],           required: false }
+  accountStatus:    { headers: ['Lifecycle stage'],        required: false },
+  crmOwner:         { headers: ['Company owner'],          required: false },
+  sdr:              { headers: ['Prospecting SDR'],        required: false },
+  country:          { headers: ['Country'],                required: false },
+  city:             { headers: ['City'],                   required: false },
+  practitioners:    { headers: ['Practitioners on file'],  required: false },
+  patentPortfolio:  { headers: ['Patent portfolio'],       required: false },
+  sameFirmCount:    { headers: ['Attendees from same firm'], required: false },
+  // Read as P1 / P2 / P3; the override, when filled, wins.
+  suggestedPrio:    { headers: ['Computed priority'],      required: false },
+  priority:         { headers: ['Priority override'],      required: false },
+  // Field zone. Ownership is information only at this event (no assigned lists).
+  ownership:        { headers: ['Ownership'],              required: false },
+  removed:          { headers: ['Remove'],                 required: false },
+  angle:            { headers: ['Objective'],              required: false },
+  fieldNotes:       { headers: ['Context'],                required: false }
 };
 
-// The second list, searched when someone is not in the main population: a delegate
-// directory, a member list, an exhibitor list. Often a single name column, which is
-// why fullName is required here and split names are not.
+// The second list, searched when someone is not in the main population.
 // No second list (see TAB_NAMES). Empty on purpose.
 var DIRECTORY_COLUMNS = {};
 
 // Columns the app writes to the encounters tab.
 //
 // DECLARATION ORDER IS PRIORITY ORDER. When two logical fields resolve to the same
-// column, the later one is dropped rather than allowed to overwrite the first. That
-// is why metBy is declared before met: "met by" prefix-matches "met", and letting a
-// Yes/No overwrite an author's name poisons the export silently.
+// column, the later one is dropped rather than allowed to overwrite the first.
+// metBy is declared before met, and `met` is headed `Met status` so it can never
+// land on `Met by`. `hook` has no alias: `Observation` is its own column here.
 //
 // Names are stored SPLIT. lastName is the required one: a card read in a noisy room
-// sometimes yields only a surname, and that row is still worth writing. Splitting a
-// full name afterwards is guesswork on particles, double barrels and reversed order,
-// and it has to be redone on every export.
-// Tab "Encounters". Append only, idempotent on Client ID.
-// DECLARATION ORDER IS PRIORITY ORDER: metBy before met, and `met` is headed
-// `Met status` so it can never land on `Met by`. `captureMethod` (from the file,
-// from search, typed on site) is headed `Source`. Extra fields from CAPTURE_EXTRA
-// in config.js follow the core ones, one frozen header each.
+// sometimes yields only a surname, and that row is still worth writing.
 //
-// Second header in each list: the names used by the tab as first created (6 Oct),
-// copied from the previous event. The app reads and writes either.
-// Contact columns on that tab (Company Owner, Prospecting SDR, Tiering,
-// Lifecycle, Organization type, Domain) are not written by the app: they are
-// joined back from the Attendees List at export.
+// Tab "Encounters" (layer 4). Append only, idempotent on Client ID.
+// `Key` is not written by the app: the follow-up and the CRM export recompute it
+// from Email, else First name + Last name + Firm, exactly as the Field guide
+// does. `Email` is the extra field typed for people met outside the list.
+// `captureMethod` (from the file, from search, typed on site) is headed `Source`.
 var ENCOUNTER_COLUMNS = {
   clientId:        { headers: ['Client ID'],                    required: false },
-  date:            { headers: ['Date'],                         required: true  },
   capturedAt:      { headers: ['Captured at'],                  required: false },
-  metBy:           { headers: ['Met by'],                       required: true  },
+  date:            { headers: ['Date'],                         required: true  },
   session:         { headers: ['Session / moment', 'Session'],  required: false },
+  metBy:           { headers: ['Met by'],                       required: true  },
   lastName:        { headers: ['Last name'],                    required: true  },
   firstName:       { headers: ['First name'],                   required: false },
-  firm:            { headers: ['Firm', 'Company name'],         required: false },
-  email:           { headers: ['Email', 'Work Email'],          required: false },
+  firm:            { headers: ['Firm'],                         required: false },
+  email:           { headers: ['Email'],                        required: false },
+  role:            { headers: ['Job title'],                    required: false },
   met:             { headers: ['Met status'],                   required: false },
   temperature:     { headers: ['Temperature'],                  required: false },
   toolToday:       { headers: ['Tool today'],                   required: false },
   nextStep:        { headers: ['Next step'],                    required: false },
-  hook:            { headers: ['Hook', 'Observation'],          required: false },
-  practitioners:   { headers: ['Practitioners', 'Number of Practitioners'], required: false },
-  draftingModel:   { headers: ['Drafting model'],               required: false },
-  purchaseSignOff: { headers: ['Tool purchase sign-off'],       required: false },
-  otherTools:      { headers: ['Other tools'],                  required: false },
+  hook:            { headers: ['Hook'],                         required: false },
+  observation:     { headers: ['Observation'],                  required: false },
+  practitioners:   { headers: ['Practitioners'],                required: false },
   technicalField:  { headers: ['Technical field'],              required: false },
-  captureMethod:   { headers: ['Source'],                       required: false },
-  role:            { headers: ['Job Title', 'Role'],            required: false }
+  captureMethod:   { headers: ['Source'],                       required: false }
 };
 
 // Ties each logical tab to its name aliases and to the column map that describes

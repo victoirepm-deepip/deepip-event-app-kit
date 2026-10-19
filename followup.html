@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Follow-up drafts</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+  .fu-wrap{max-width:760px;margin:0 auto;padding:16px}
+  .fu-card{padding:14px;margin:10px 0;background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius)}
+  .fu-card h3{margin:0 0 6px;font-size:16px}
+  .fu-body{width:100%;box-sizing:border-box;font:inherit;padding:10px;border-radius:8px;margin:6px 0}
+  .fu-warn{color:var(--accent);margin:4px 0;font-size:13px}
+</style>
+</head>
+<body>
+<main class="fu-wrap">
+  <h1 id="fu-title">Follow-up drafts</h1>
+  <!-- Local use only, after the event. Never published, never committed with
+       content: the page renders every capture and holds it only in this tab. -->
+  <p class="fu-warn">Check the organiser's terms on using the attendee list before sending anything. Every draft is reviewed and sent by hand.</p>
+  <div id="fu-signin"></div>
+  <section id="fu"></section>
+</main>
+<script src="https://accounts.google.com/gsi/client" async defer
+        onload="document.dispatchEvent(new CustomEvent('gis:loaded'))"></script>
+<script src="config.js"></script>
+<script src="store.js"></script>
+<script src="auth.js"></script>
+<script src="model.js"></script>
+<script src="followup.js"></script>
+<script>document.getElementById("fu-title").textContent = EVENT.name + ": follow-up drafts";</script>
+</body>
+</html>
