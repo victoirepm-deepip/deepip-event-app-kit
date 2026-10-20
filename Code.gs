@@ -131,15 +131,21 @@ var DIRECTORY_COLUMNS = {};
 // DECLARATION ORDER IS PRIORITY ORDER. When two logical fields resolve to the same
 // column, the later one is dropped rather than allowed to overwrite the first.
 // metBy is declared before met, and `met` is headed `Met status` so it can never
-// land on `Met by`. `hook` has no alias: `Observation` is its own column here.
+// land on `Met by`.
 //
 // Names are stored SPLIT. lastName is the required one: a card read in a noisy room
 // sometimes yields only a surname, and that row is still worth writing.
 //
-// Tab "Encounters" (layer 4). Append only, idempotent on Client ID.
-// `Key` is not written by the app: the follow-up and the CRM export recompute it
-// from Email, else First name + Last name + Firm, exactly as the Field guide
-// does. `Email` is the extra field typed for people met outside the list.
+// Tab "Encounters". Append only, idempotent on Client ID.
+// The live tab (20 Oct) reuses the previous event's layout rather than the
+// brief's: `Company name`, `Work Email`, `Number of Practitioners`, and no `Hook`
+// column. Each key lists the brief's header first and the live one second, so
+// either layout resolves. With no `Hook`, the hook goes to `Observation`, as at
+// the previous event; nobody is a tutor here, so `observation` is not mapped.
+// Not written by the app: Key, Company Owner, Prospecting SDR, Tiering,
+// Lifecycle, Organization type, Domain (joined back from the contacts at
+// export), and Drafting model, Tool purchase sign-off, Other tools (not asked
+// at this event).
 // `captureMethod` (from the file, from search, typed on site) is headed `Source`.
 var ENCOUNTER_COLUMNS = {
   clientId:        { headers: ['Client ID'],                    required: false },
@@ -149,16 +155,15 @@ var ENCOUNTER_COLUMNS = {
   metBy:           { headers: ['Met by'],                       required: true  },
   lastName:        { headers: ['Last name'],                    required: true  },
   firstName:       { headers: ['First name'],                   required: false },
-  firm:            { headers: ['Firm'],                         required: false },
-  email:           { headers: ['Email'],                        required: false },
+  firm:            { headers: ['Firm', 'Company name'],         required: false },
+  email:           { headers: ['Email', 'Work Email'],          required: false },
   role:            { headers: ['Job title'],                    required: false },
   met:             { headers: ['Met status'],                   required: false },
   temperature:     { headers: ['Temperature'],                  required: false },
   toolToday:       { headers: ['Tool today'],                   required: false },
   nextStep:        { headers: ['Next step'],                    required: false },
-  hook:            { headers: ['Hook'],                         required: false },
-  observation:     { headers: ['Observation'],                  required: false },
-  practitioners:   { headers: ['Practitioners'],                required: false },
+  hook:            { headers: ['Hook', 'Observation'],          required: false },
+  practitioners:   { headers: ['Practitioners', 'Number of Practitioners'], required: false },
   technicalField:  { headers: ['Technical field'],              required: false },
   captureMethod:   { headers: ['Source'],                       required: false }
 };
