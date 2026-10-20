@@ -59,10 +59,10 @@ var TAB_NAMES = {
 
 var ALLOWED_DOMAIN = 'deepip.ai';
 
-// The OAuth 2.0 Web Client ID from the Google Cloud console. One client is reused
-// across events; its authorised JavaScript origins must cover wherever the app is
-// served from. Must be byte-identical to GOOGLE_CLIENT_ID in config.js.
-var CLIENT_ID = '810262336028-7a92202r99cp09pv0s8gf5g5idsrer3u.apps.googleusercontent.com';
+// The OAuth 2.0 Web Client ID from the Google Cloud console. VPP Herbstfachtagung
+// 2026 has its own client (20 Oct), authorised for the deploy repo's Pages origin.
+// Must be byte-identical to GOOGLE_CLIENT_ID in config.js.
+var CLIENT_ID = '810262336028-s1b8anjis66rjtmvibojne0i17nl4ljb.apps.googleusercontent.com';
 
 // How many rows to scan at the top of a tab when hunting for the header row.
 var HEADER_SCAN_DEPTH = 25;

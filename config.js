@@ -15,10 +15,10 @@
 // is not deploying it. Manage deployments > pencil > New version > Deploy.
 const APPS_SCRIPT_URL = "";
 
-// Shared DeepIP client, reused since Munich. Must be byte-identical to CLIENT_ID
-// in Code.gs. Its authorised origins must cover the Pages origin of the deploy
-// repo (confirmed by the build owner, 19 Oct) and http://localhost:4173.
-const GOOGLE_CLIENT_ID = "810262336028-7a92202r99cp09pv0s8gf5g5idsrer3u.apps.googleusercontent.com";
+// Dedicated client for this event, created by the Cloud admin on 20 Oct. Must be
+// byte-identical to CLIENT_ID in Code.gs. Authorised origin:
+// https://thomaschazot-czt.github.io (the deploy repo's Pages).
+const GOOGLE_CLIENT_ID = "810262336028-s1b8anjis66rjtmvibojne0i17nl4ljb.apps.googleusercontent.com";
 
 /* ---- The event -------------------------------------------------------- */
 
@@ -28,7 +28,7 @@ const EVENT = {
   // one origin never share storage.
   slug: "vpp-herbst-2026",
   // Bump on every deployment.
-  shellVersion: 1,
+  shellVersion: 2,
   // Must equal timeZone in appsscript.json and the Sheet's File > Settings > Time zone.
   timezone: "Europe/Berlin",
 
