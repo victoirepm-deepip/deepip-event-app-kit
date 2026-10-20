@@ -50,10 +50,13 @@ var SHEET_ID = ''; // paste the Sheet ID in the bound copy only; kept out of the
 //   directory:  ['2. FICPI Directory', '2. Directory'],
 //   encounters: ['3. On site']
 var TAB_NAMES = {
-  contacts:   ['Field guide', 'Field Guide'],
-  // No second list at this event: the Field guide is the organiser's final list.
-  // Same tab, empty DIRECTORY_COLUMNS below -> empty directory, no warnings.
-  directory:  ['Field guide', 'Field Guide'],
+  // Field guide first: when it exists it wins. Until then (decided 20 Oct) the app
+  // reads the organiser list tab directly, with no Remove or Corrections, so DeepIP
+  // and exhibitor staff appear in the list.
+  contacts:   ['Field guide', 'Field Guide', 'VPP 2026 Attendees list'],
+  // No second list at this event. Same tabs, empty DIRECTORY_COLUMNS below ->
+  // empty directory, no warnings.
+  directory:  ['Field guide', 'Field Guide', 'VPP 2026 Attendees list'],
   encounters: ['Encounters']
 };
 
@@ -94,22 +97,29 @@ var HEADER_SCAN_DEPTH = 25;
 //   - `Priority override` and `Computed priority` are named in full.
 // Not read, on purpose: Key (join key, used at export), LinkedIn, HubSpot
 // contact ID, HubSpot company ID (carried for the CRM import only).
+//
+// Second header in a list = the organiser list tab "VPP 2026 Attendees list",
+// read directly until a Field guide exists. On that tab `Lifecycle Stage` wins
+// over `Lifecycle Stage 2` by exact match; Phone Number, LinkedIn and lemlist
+// columns are not read. The field-zone keys (priority, ownership, removed,
+// angle, fieldNotes), Computed priority and Attendees from same firm have no
+// column there: selfTest lists them as blank, which is expected.
 var CONTACT_COLUMNS = {
   firstName:        { headers: ['First name'],             required: true  },
   lastName:         { headers: ['Last name'],              required: true  },
-  firm:             { headers: ['Firm'],                   required: true  },
+  firm:             { headers: ['Firm', 'Company name'],   required: true  },
   email:            { headers: ['Email'],                  required: false },
   role:             { headers: ['Job title'],              required: false },
   organizationType: { headers: ['Organization type'],      required: false },
-  tiering:          { headers: ['Tier'],                   required: false },
-  targetAccount:    { headers: ['Target account'],         required: false },
+  tiering:          { headers: ['Tier', 'Tiering (New 2026)'], required: false },
+  targetAccount:    { headers: ['Target account', 'Target Account (Company Recopy)'], required: false },
   // Lifecycle "Customer" raises the customer banner on the card.
   accountStatus:    { headers: ['Lifecycle stage'],        required: false },
   crmOwner:         { headers: ['Company owner'],          required: false },
   sdr:              { headers: ['Prospecting SDR'],        required: false },
   country:          { headers: ['Country'],                required: false },
   city:             { headers: ['City'],                   required: false },
-  practitioners:    { headers: ['Practitioners on file'],  required: false },
+  practitioners:    { headers: ['Practitioners on file', 'Number of Patent Practitioners'], required: false },
   patentPortfolio:  { headers: ['Patent portfolio'],       required: false },
   sameFirmCount:    { headers: ['Attendees from same firm'], required: false },
   // Read as P1 / P2 / P3; the override, when filled, wins.

@@ -28,7 +28,7 @@ const EVENT = {
   // one origin never share storage.
   slug: "vpp-herbst-2026",
   // Bump on every deployment.
-  shellVersion: 2,
+  shellVersion: 3,
   // Must equal timeZone in appsscript.json and the Sheet's File > Settings > Time zone.
   timezone: "Europe/Berlin",
 
@@ -152,7 +152,9 @@ const FOLLOW_UP = {
 /* Field guide columns shown on the card, in this order. `Lifecycle stage` is
    the engine's accountStatus; "Customer" raises the customer banner. */
 const CARD_FIELDS = [
-  { key: "ownership",        label: "Ownership", empty: "No owner" },
+  // Hand-filled on the Field guide only; hidden while the app reads the
+  // organiser list tab, which has no such column.
+  { key: "ownership",        label: "Ownership" },
   { key: "sdr",              label: "Prospecting SDR" },
   { key: "accountStatus",    label: "Lifecycle stage" },
   { key: "tiering",          label: "Tier" },
@@ -171,16 +173,18 @@ const LIST_FIELDS = [
   { key: "targetAccount", flag: "Target account" }
 ];
 
-/* Filter chips on the list. Priority comes from `Priority override`, falling
-   back to `Computed priority`. */
+/* Filter chips on the list. The first four work on the organiser list tab.
+   Priority, "Assigned to me" and "No owner" need the Field guide (Priority
+   override / Computed priority, Ownership): they stay last and simply fill up
+   once that tab exists. */
 const LIST_FILTERS = [
-  "p1",
-  "p2",
-  "p3",
   "notmet",
   { id: "target", label: "Target account", key: "targetAccount", match: "yes" },
   "customers",
   "multifirm",
+  "p1",
+  "p2",
+  "p3",
   "mine",
   "noowner"
 ];
