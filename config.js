@@ -13,7 +13,9 @@
 
 // Filled at deployment (CLAUDE.md section 6, step 7). Remember: editing Code.gs
 // is not deploying it. Manage deployments > pencil > New version > Deploy.
-const APPS_SCRIPT_URL = "";
+// Deployment of 20 Oct, bound to the converted Google Sheet. Generic form of the
+// URL (no /a/macros/deepip.ai/), same deployment.
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzl65_Ig7OCsKVv8sIwZlXLAJTnwrp36I47W6dHEmfB95ySDNqZ9UXdtCvmhV81KspI/exec";
 
 // Dedicated client for this event, created by the Cloud admin on 20 Oct. Must be
 // byte-identical to CLIENT_ID in Code.gs. Authorised origin:
@@ -28,7 +30,7 @@ const EVENT = {
   // one origin never share storage.
   slug: "vpp-herbst-2026",
   // Bump on every deployment.
-  shellVersion: 3,
+  shellVersion: 4,
   // Must equal timeZone in appsscript.json and the Sheet's File > Settings > Time zone.
   timezone: "Europe/Berlin",
 
