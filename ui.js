@@ -180,6 +180,8 @@ const UI = (() => {
   /** Level 1. One line, one line only: name, firm, priority chip, one flag icon. */
   function personRow(p, app) {
     const flag = Model.topFlag(p);
+    // The rank drives the colour class; the cell shows the grade as the Sheet
+    // spells it, so an "A" event does not read "P1" on every row.
     const prio = Model.priority(p).value;
     const met = Model.isMet(p, app.ctx.index);
     // The first line is one line and stays one line: five fixed grid cells, no
@@ -190,7 +192,7 @@ const UI = (() => {
       <span class="row-flag ${flag ? "flag-" + flag.key : ""}" title="${flag ? esc(flag.label) : ""}">${flag ? flag.icon : ""}</span>
       <span class="row-name">${esc(Model.fullName(p))}</span>
       <span class="row-firm">${esc(c(p.firm))}</span>
-      <span class="row-prio ${prio ? "p" + prio : ""}">${prio ? "P" + prio : ""}</span>
+      <span class="row-prio ${prio ? "p" + prio : ""}">${esc(Model.priorityShort(p))}</span>
       <span class="row-check" title="${met ? "Met" : "Not yet met"}">${met ? "✓" : ""}</span>
       ${tags}
     </a>`;
@@ -206,8 +208,19 @@ const UI = (() => {
   function listTags(p) {
     const fields = typeof LIST_FIELDS !== "undefined" ? LIST_FIELDS : [];
     const bits = fields.map(f => {
+      // A ranked grade already has the fixed cell on the first line; only the
+      // unranked labels need a tag, so nothing is said twice.
+      if (f.key === "priority" && Model.priority(p).value !== null) return "";
       const v = c(p[f.key]);
       if (!v || NO.test(v)) return "";
+      // `flag` with a `match` is a short label for ONE value of a column that
+      // holds several: show it when the cell matches, show nothing when it does
+      // not. Without the match it printed "Partner guest: Partner guest" on the
+      // ones it meant and "Partner guest: Partner host" on the ones it did not.
+      if (f.flag && f.match) {
+        return Model.norm(v).indexOf(Model.norm(f.match)) > -1
+          ? `<span class="tag tag-flag">${esc(f.flag)}</span>` : "";
+      }
       if (f.flag) return YES.test(v) ? `<span class="tag tag-flag">${esc(f.flag)}</span>` : `<span class="tag">${esc(f.flag)}: ${esc(v)}</span>`;
       return `<span class="tag">${esc(v)}</span>`;
     }).filter(Boolean);
@@ -340,7 +353,6 @@ const UI = (() => {
       <div class="enc-head"><strong>${esc(c(e.metBy) || "—")}</strong><span>${esc(when)}${c(e.session) ? " · " + esc(Model.sessionDisplay(e.session)) : ""}</span></div>
       ${c(e.hook) ? `<p class="enc-hook">${esc(c(e.hook))}</p>` : ""}
       ${bits.length ? `<p class="enc-bits">${bits.map(b => chip(b)).join("")}</p>` : ""}
-      ${c(e.observation) ? `<p class="enc-obs">${esc(c(e.observation))}</p>` : ""}
     </div>`;
   }
 
@@ -387,7 +399,6 @@ const UI = (() => {
 
   /* ---- capture ----------------------------------------------------------
      Five fields. Four as thumb-sized button groups, one short text. No dictation.
-     Tutors get one extra field, one tap, no text — same form, same row, own column.
 
      The unknown-person path is the top of this screen, not a dead end reached
      after a failed search: it is the most-used path across the three days. */
@@ -429,7 +440,6 @@ const UI = (() => {
         <textarea id="cap-hook" rows="3" placeholder="One line you will be glad you wrote">${esc(draft.hook || "")}</textarea>
       </label>
       ${group("nextStep", CAPTURE_OPTIONS.nextStep, draft.nextStep)}
-      ${app.me.isTutor ? group("observation", CAPTURE_OPTIONS.observation, draft.observation) : ""}
       ${(typeof CAPTURE_EXTRA !== "undefined" ? CAPTURE_EXTRA : []).map(x => extraField(x, draft)).join("")}
       <button class="btn btn-primary" data-act="save" ${Sync.state.frozen ? "disabled" : ""}>Save</button>
       <p class="muted small pad">Saved on this phone first. It reaches the Sheet on its own, even if you are offline now.</p>
@@ -458,7 +468,7 @@ const UI = (() => {
 
   const groupLabel = n => ({
     met: "Met", temperature: "Temperature", toolToday: "Tool today",
-    nextStep: "Next step", observation: "What you saw (tutor)"
+    nextStep: "Next step"
   })[n] || n;
 
   /* ---- tonight ----------------------------------------------------------
@@ -571,7 +581,6 @@ const UI = (() => {
         ${field("Name", app.me.fullName || app.me.name)}
         ${field("Logged as", app.me.name)}
         ${field("Role", app.me.role)}
-        <label class="toggle"><input type="checkbox" data-act="toggle-tutor" ${app.me.isTutor ? "checked" : ""}/> Show the tutor observation field</label>
         <label class="toggle"><input type="checkbox" data-act="toggle-list" ${app.me.hasList ? "checked" : ""}/> I have an assigned list</label>
         <label class="setting">Name in the Sheet's ownership column
           <input type="text" data-act="ownername" value="${esc((app.me.ownerNames || []).join(", "))}" placeholder="e.g. Anna" />

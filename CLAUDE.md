@@ -101,8 +101,7 @@ Ask them together, in one message, numbered. No default covers any of them.
 3. **Population**: one list or several tracks? Roughly how many people? Is there a
    second list to search against (a delegate directory, a member list)?
 4. **People on the floor**: name, email, and for each one, does she or he have an
-   assigned list, and is it a tutor-type role (someone who observes people working,
-   whose signal is worth its own field)?
+   assigned list?
 4b. **What the team must bring back**: beyond the five core fields, what do you want
    them to capture on site that we do not already have? Ask it in those words, with
    an example or two, because "which extra columns do you want" gets an empty answer
@@ -148,11 +147,13 @@ auth.js                Google Identity Services. Never changes.
 sync.js                queue and round-trip. Never changes.
 model.js               filtering, grouping, search. Changes only for a new view.
 ui.js                  screens. Changes per event only for a module-specific screen.
-app.js                 routing and state. Never changes.
+app.js                 routing and state. Gains lines whenever ui.js gains a screen.
 ```
 
 If you find yourself editing `store.js`, `auth.js` or `sync.js`, stop and explain why
-in chat first. Those three are where the field lessons are buried.
+in chat first. Those three are where the field lessons are buried. They are the
+stop line; `app.js` is not (see section 5, "A module-specific screen cannot avoid
+`app.js`").
 
 There is no `publish/` folder. The previous build had one and it silently diverged
 from the source. Serve the repo root or add a real build step.
@@ -189,6 +190,32 @@ a `Client ID` count towards the evening recap.
 
 **The Sheet gets renamed mid-event.** Keep old tab names as aliases. An alias costs
 nothing and saves a redeploy.
+
+**A module-specific screen cannot avoid `app.js`** (Paris, Nov 2026). The router in
+`app.js` is a hardcoded `switch` and the delegated click handler is a chain of
+`if (act === …)`. A new screen therefore needs a `case`, and a new button needs a
+handler, or neither is reachable. Paris added five screens and the changes to
+`app.js` were purely additive: five `case` lines, two counters, one `writeEntry()`
+beside `saveCapture()`, four handlers, one input handler, and the half-typed-form
+guard widened from `#/capture` to every screen with a text field in it. Nothing
+existing was rewritten. Expect that shape, and keep it additive.
+
+**One write surface can carry more than one kind of row** (Paris, Nov 2026). An
+`Entry type` column on the write tab let the welcome desk, the panel hooks and the
+introduction requests share the capture tab, the offline queue and the idempotency
+key, with no backend change at all — the column maps already pass any mapped key
+through. The rule that makes it safe: *every* place that computes "met" filters to
+`Capture` first, in `model.js`, not in the screens. The failure it avoids is a
+check-in making someone look met, which quietly empties the "not yet met" list on
+the one evening it matters. A row with no `Entry type` is read as a capture, so
+rows typed into the Sheet by hand still count.
+
+**A configured chip that selects everyone looks like a working chip** (Paris,
+Nov 2026). `LIST_FILTERS` entries with a `match` value read it and then never
+compared it, so four of the eight Paris chips matched the whole room without
+erroring. Fixed in `model.js`. The lesson outlives the fix: a filter is only
+verified by counting what it returns against a real export, never by tapping it
+and seeing rows.
 
 ---
 

@@ -72,11 +72,8 @@ const EVENT = {
 
 /* ---- Who is who ------------------------------------------------------- */
 /*
-  One product for everyone. The role affects exactly two things:
-    hasList  -> whether "assigned to me" is the default filter on open
-    isTutor  -> whether the capture form shows the extra observation field
-
-  Everything else is identical. Everyone sees and writes every record, and nothing
+  One product for everyone. The role affects exactly one thing: `hasList`, whether
+  "assigned to me" is the default filter on open. Everything else is identical. Everyone sees and writes every record, and nothing
   is gated on this table: an email that is not listed still gets the full app, with
   no default filter, correctable from Settings.
 
@@ -93,7 +90,7 @@ const EVENT = {
   Include whoever runs the onboarding session, even if they are not on the floor.
 */
 const USERS = {
-  // "first.last@deepip.ai": { name: "First", fullName: "First Last", role: "Sales", hasList: true, isTutor: false, ownerNames: ["first", "last"] },
+  // "first.last@deepip.ai": { name: "First", fullName: "First Last", role: "Sales", hasList: true, ownerNames: ["first", "last"] },
 };
 
 /* ---- Capture form ----------------------------------------------------- */
@@ -118,9 +115,7 @@ const CAPTURE_OPTIONS = {
   met:         ["Yes", "No", "Not seen"],
   temperature: ["Hot", "Warm", "Cold", "Not a fit"],
   toolToday:   ["Nothing", "Built in-house", "Other", "Unknown"], // + COMPETITORS below
-  nextStep:    ["Demo", "Intro", "Send content", "Nothing"],
-  // Tutors only. One tap, no text: someone teaching all day will not type a sentence.
-  observation: ["Engaged", "Asked a good question", "Already using a tool", "Stuck on something"]
+  nextStep:    ["Demo", "Intro", "Send content", "Nothing"]
 };
 
 /* Extra fields, per event. Asked for in the phase A interview: "what do you want
@@ -156,6 +151,48 @@ const CAPTURE_EXTRA = [
 // the list is worth curating per event. Names only. Never annotate a competitor
 // with an account, a deal or a number in this file.
 const COMPETITORS = [];
+
+/* ---- Contact card and list -------------------------------------------- */
+/*
+  Three optional blocks. Leave any of them out and the engine falls back to its
+  own defaults: every built-in chip is offered and the list rows are one line.
+
+  CARD_FIELDS   which Sheet columns appear on a person's card, in this order.
+                `empty` is what the card says when the column is blank, for a
+                column that is empty on purpose and would otherwise look broken.
+  LIST_FIELDS   the second line of a list row. A field with `flag` AND `match`
+                is a short label for one value of a column that holds several:
+                it shows when the cell matches and shows nothing when it does
+                not. A field with `flag` alone is a yes/no column.
+  LIST_FILTERS  the chips, in order. A plain string picks a built-in chip
+                (mine, noowner, p1, p2, p3, notmet, customers, advanced,
+                engaged, competitor, dinner, multifirm). An object makes a chip
+                out of any column:
+                  match: "yes"      the column is ticked
+                  match: "Partner"  the column contains that value
+                                    (normalised substring, so "Panel" finds
+                                     "Panel 1" and "Panel 2")
+                  no match at all   the column holds anything
+
+  Leave `match` off by accident and the chip matches every row that has anything
+  in the column, which at a co-hosted event is everyone. Check each chip against
+  a real export before the event: a chip that selects the whole room looks like
+  a working chip.
+*/
+const CARD_FIELDS = [
+  // { key: "ownership", label: "Ownership", empty: "Not claimed yet" },
+];
+
+const LIST_FIELDS = [
+  // { key: "priority" },
+  // { key: "population", flag: "Guest of the host", match: "host guest" },
+];
+
+const LIST_FILTERS = [
+  // "mine",
+  // "notmet",
+  // { id: "p1", label: "Priority 1", key: "priority", match: "1" },
+];
 
 /* ---- Sync and freshness ----------------------------------------------- */
 /*

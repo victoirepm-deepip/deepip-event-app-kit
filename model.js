@@ -66,23 +66,55 @@ const Model = (() => {
   /* ---- priority -------------------------------------------------------- */
 
   /**
-   * The sales-set "Priority level 1-2-3" wins; "Suggested Prio" is the fallback.
-   * Customer rows may carry a flag ("CUSTOMER - do not pitch…") where a number
-   * would be — those have no priority and still render.
+   * The sales-set priority wins; "Suggested Prio" is the fallback.
+   *
+   * Events do not agree on how they grade. Munich and Budapest used P1 / P2 / P3;
+   * Paris used A / B / C / Vendor / Host. Both are read here, so moving from one
+   * to the other is a change in the Sheet and not a change in the code:
+   *   - A, B and C rank like 1, 2 and 3, so the list sorts the way the column
+   *     was filled in.
+   *   - 1, 2 and 3 keep working exactly as before.
+   *   - Anything else (Vendor, Host, "CUSTOMER - do not pitch…") is an unranked
+   *     label: it sorts last and it still renders, because an unranked row is a
+   *     legitimate row, not a missing value.
+   *
+   * `value` is the rank and is what sorting and the P1/P2/P3 chips read.
+   * `label` is what a human sees, and exists for every row that has anything
+   * in the column at all.
    */
+  const LETTER_RANK = { a: 1, b: 2, c: 3 };
+
   function priority(c) {
-    const explicit = clean(c.priority).match(/[123]/);
-    if (explicit) return { value: Number(explicit[0]), source: "sales" };
+    const raw = clean(c.priority);
+    const letter = raw.match(/^([abc])\b/i);
+    if (letter) {
+      const ch = letter[1].toUpperCase();
+      return { value: LETTER_RANK[ch.toLowerCase()], source: "sales", label: ch };
+    }
+    const explicit = raw.match(/[123]/);
+    if (explicit) return { value: Number(explicit[0]), source: "sales", label: "P" + explicit[0] };
     const suggested = clean(c.suggestedPrio);
     const m = suggested.match(/^P\s*([123])/i);
-    if (m) return { value: Number(m[1]), source: "suggested" };
-    return { value: null, source: suggested ? "flag" : "none" };
+    if (m) return { value: Number(m[1]), source: "suggested", label: "P" + m[1] };
+    // Only now is the cell an unranked label. The suggested fallback is tried
+    // first so that a Sheet carrying "CUSTOMER - do not pitch…" where a grade
+    // would be keeps the rank it had before this function understood labels.
+    if (raw) return { value: null, source: "flag", label: raw };
+    return { value: null, source: suggested ? "flag" : "none", label: suggested };
   }
 
   const priorityLabel = c => {
     const p = priority(c);
-    if (p.value === null) return "";
-    return p.source === "suggested" ? `P${p.value} (suggested)` : `P${p.value}`;
+    if (!p.label) return "";
+    return p.source === "suggested" ? `${p.label} (suggested)` : p.label;
+  };
+
+  /** The one-line list cell: ranked grades only, so it stays one character wide.
+   *  Unranked labels (Vendor, Host, a do-not-pitch flag) are longer than the cell
+   *  and are shown by the tag line instead. */
+  const priorityShort = c => {
+    const p = priority(c);
+    return p.value === null ? "" : p.label;
   };
 
   /* ---- flags ----------------------------------------------------------- */
@@ -297,9 +329,22 @@ const Model = (() => {
     const YES = /^(yes|y|true|1|x|oui)$/i, NO = /^(no|n|false|0|non)$/i;
     return wanted.map(w => {
       if (typeof w === "string") return base.find(f => f.id === w);
+      /* Three kinds of configured chip:
+           match: "yes"        a yes/no column, ticked
+           match: some value   that column holds this value
+           no match            that column holds anything at all
+
+         The middle one used to fall through to the third: the value was read to
+         choose a test and then never compared, so a "Priority A" chip meant "has
+         any priority" and a "Guests of X" chip meant "has any population", which
+         at a co-hosted event is everyone. Four of the eight chips configured for
+         Paris matched the whole room, silently. Matched as a normalised
+         substring, so "Panel" still finds "Panel 1" and "Panel 2". */
       const test = w.match === "yes"
         ? c => YES.test(clean(c[w.key]))
-        : c => has(c[w.key]) && !NO.test(clean(c[w.key]));
+        : w.match
+          ? c => { const v = norm(c[w.key]), m = norm(w.match); return !!v && !!m && v.indexOf(m) > -1; }
+          : c => has(c[w.key]) && !NO.test(clean(c[w.key]));
       return { id: w.id, label: w.label, test };
     }).filter(Boolean);
   }
@@ -635,7 +680,7 @@ const Model = (() => {
 
   return {
     clean, has, norm, fullName, contactKey, encounterKey, contactRef, personKey, parseMoney, displayDate,
-    priority, priorityLabel, flags, topFlag, engagement, whatToSay,
+    priority, priorityLabel, priorityShort, flags, topFlag, engagement, whatToSay,
     indexEncounters, threadFor, isMet, looseContactMatch, unmatchedPeople,
     buildFirms, firmMates, competitorFor, directoryLabel,
     availableFilters, applyFilters, sortContacts, isMine, search,
