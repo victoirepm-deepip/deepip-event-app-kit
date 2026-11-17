@@ -29,7 +29,7 @@ const USERS = {
   "ae@deepip.ai": { name: "AE", fullName: "Ada Engel", role: "Sales", hasList: true, ownerNames: ["engel"] }
 };
 const OWNER_KEYS = ["ownership"];
-const CAPTURE_OPTIONS = { met: ["Yes", "No"], temperature: ["Hot"], toolToday: [], nextStep: [], observation: [] };
+const CAPTURE_OPTIONS = { met: ["Yes", "No"], temperature: ["Hot"], toolToday: [], nextStep: [] };
 const CAPTURE_EXTRA = [];
 const COMPETITORS = [];
 const FOLLOW_UP = { sender: "metBy", fallbackSender: "metBy", cc: "", sendWithinHours: 24, signers: {}, moments: {} };

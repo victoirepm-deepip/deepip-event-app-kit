@@ -72,11 +72,8 @@ const EVENT = {
 
 /* ---- Who is who ------------------------------------------------------- */
 /*
-  One product for everyone. The role affects exactly two things:
-    hasList  -> whether "assigned to me" is the default filter on open
-    isTutor  -> whether the capture form shows the extra observation field
-
-  Everything else is identical. Everyone sees and writes every record, and nothing
+  One product for everyone. The role affects exactly one thing: `hasList`, whether
+  "assigned to me" is the default filter on open. Everything else is identical. Everyone sees and writes every record, and nothing
   is gated on this table: an email that is not listed still gets the full app, with
   no default filter, correctable from Settings.
 
@@ -93,7 +90,7 @@ const EVENT = {
   Include whoever runs the onboarding session, even if they are not on the floor.
 */
 const USERS = {
-  // "first.last@deepip.ai": { name: "First", fullName: "First Last", role: "Sales", hasList: true, isTutor: false, ownerNames: ["first", "last"] },
+  // "first.last@deepip.ai": { name: "First", fullName: "First Last", role: "Sales", hasList: true, ownerNames: ["first", "last"] },
 };
 
 /* ---- Capture form ----------------------------------------------------- */
@@ -118,9 +115,7 @@ const CAPTURE_OPTIONS = {
   met:         ["Yes", "No", "Not seen"],
   temperature: ["Hot", "Warm", "Cold", "Not a fit"],
   toolToday:   ["Nothing", "Built in-house", "Other", "Unknown"], // + COMPETITORS below
-  nextStep:    ["Demo", "Intro", "Send content", "Nothing"],
-  // Tutors only. One tap, no text: someone teaching all day will not type a sentence.
-  observation: ["Engaged", "Asked a good question", "Already using a tool", "Stuck on something"]
+  nextStep:    ["Demo", "Intro", "Send content", "Nothing"]
 };
 
 /* Extra fields, per event. Asked for in the phase A interview: "what do you want

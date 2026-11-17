@@ -61,15 +61,15 @@ const EVENT = {
 /*
   Everyone sees and writes every record. Nobody has an assigned list (decided
   19 Oct): the app opens on the whole list with no default filter. The Field
-  guide's Ownership column is information only. Nobody is a tutor.
+  guide's Ownership column is information only.
 
   No additional user (brief, 19 Oct): an unlisted @deepip.ai email still gets
   the full app, and "Met by" then carries its email address.
 */
 const USERS = {
-  "celia.wei@deepip.ai":         { name: "Celia",    fullName: "Celia Wei",         role: "Sales", hasList: false, isTutor: false, ownerNames: ["celia", "wei"] },
-  "matthias.hofmann@deepip.ai":  { name: "Matthias", fullName: "Matthias Hofmann",  role: "Sales", hasList: false, isTutor: false, ownerNames: ["matthias", "hofmann"] },
-  "andreas.andersson@deepip.ai": { name: "Andreas",  fullName: "Andreas Andersson", role: "Sales", hasList: false, isTutor: false, ownerNames: ["andreas", "andersson"] }
+  "celia.wei@deepip.ai":         { name: "Celia",    fullName: "Celia Wei",         role: "Sales", hasList: false, ownerNames: ["celia", "wei"] },
+  "matthias.hofmann@deepip.ai":  { name: "Matthias", fullName: "Matthias Hofmann",  role: "Sales", hasList: false, ownerNames: ["matthias", "hofmann"] },
+  "andreas.andersson@deepip.ai": { name: "Andreas",  fullName: "Andreas Andersson", role: "Sales", hasList: false, ownerNames: ["andreas", "andersson"] }
 };
 
 // Contact keys read by "Assigned to me": the hand-filled `Ownership` column of
@@ -80,15 +80,13 @@ const OWNER_KEYS = ["ownership"];
 /*
   Core fields are the follow-up generator's input contract. Write-tab headers:
   met -> `Met status`, temperature -> `Temperature`, toolToday -> `Tool today`,
-  nextStep -> `Next step`, hook -> `Hook`. The tutor-only observation field has
-  its `Observation` column but is never shown: nobody is a tutor.
+  nextStep -> `Next step`, hook -> `Hook`.
 */
 const CAPTURE_OPTIONS = {
   met:         ["Yes", "No", "Not seen"],
   temperature: ["Hot", "Warm", "Cold", "Not a fit"],
   toolToday:   ["Nothing", "Built in-house", "Other", "Unknown"], // + COMPETITORS below
-  nextStep:    ["Demo", "Intro", "Send content", "Nothing"],
-  observation: ["Engaged", "Asked a good question", "Already using a tool", "Stuck on something"]
+  nextStep:    ["Demo", "Intro", "Send content", "Nothing"]
 };
 
 /* Extra fields, from the brief. All optional: a capture is never blocked on one.

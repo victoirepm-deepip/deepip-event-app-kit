@@ -101,8 +101,7 @@ Ask them together, in one message, numbered. No default covers any of them.
 3. **Population**: one list or several tracks? Roughly how many people? Is there a
    second list to search against (a delegate directory, a member list)?
 4. **People on the floor**: name, email, and for each one, does she or he have an
-   assigned list, and is it a tutor-type role (someone who observes people working,
-   whose signal is worth its own field)?
+   assigned list?
 4b. **What the team must bring back**: beyond the five core fields, what do you want
    them to capture on site that we do not already have? Ask it in those words, with
    an example or two, because "which extra columns do you want" gets an empty answer

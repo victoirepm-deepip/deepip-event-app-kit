@@ -150,8 +150,8 @@ var DIRECTORY_COLUMNS = {};
 // The live tab (20 Oct) reuses the previous event's layout rather than the
 // brief's: `Company name`, `Work Email`, `Number of Practitioners`, and no `Hook`
 // column. Each key lists the brief's header first and the live one second, so
-// either layout resolves. With no `Hook`, the hook goes to `Observation`, as at
-// the previous event; nobody is a tutor here, so `observation` is not mapped.
+// either layout resolves. With no `Hook`, the hook goes to `Observation`, which
+// is what the previous event's write tab called that column.
 // Not written by the app: Key, Company Owner, Prospecting SDR, Tiering,
 // Lifecycle, Organization type, Domain (joined back from the contacts at
 // export), and Drafting model, Tool purchase sign-off, Other tools (not asked
@@ -362,7 +362,6 @@ function buildEncounters(t) {
       hook: cell(r, t.cols, 'hook'),
       nextStep: cell(r, t.cols, 'nextStep'),
       captureMethod: cell(r, t.cols, 'captureMethod'),
-      observation: cell(r, t.cols, 'observation'),
       contactRef: cell(r, t.cols, 'contactRef'),
       modifiedBy: cell(r, t.cols, 'modifiedBy')
     });
@@ -474,7 +473,6 @@ function encounterToRow(enc, cols, width, editorEmail) {
   put('hook', enc.hook);
   put('nextStep', enc.nextStep);
   put('captureMethod', enc.captureMethod);
-  put('observation', enc.observation);
   put('contactRef', enc.contactRef);
   put('clientId', enc.clientId);
 
@@ -484,7 +482,7 @@ function encounterToRow(enc, cols, width, editorEmail) {
   var written = { date: 1, capturedAt: 1, session: 1, metBy: 1, lastName: 1, firstName: 1,
     firm: 1, country: 1, role: 1, inList: 1, inDirectory: 1, met: 1, temperature: 1,
     toolToday: 1, practitioners: 1, hook: 1, nextStep: 1, captureMethod: 1,
-    observation: 1, contactRef: 1, clientId: 1, modifiedBy: 1 };
+    contactRef: 1, clientId: 1, modifiedBy: 1 };
   Object.keys(ENCOUNTER_COLUMNS).forEach(function (key) {
     if (!written[key]) put(key, enc[key]);
   });
