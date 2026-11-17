@@ -28,17 +28,42 @@ it is where the field lessons from Munich and Budapest are recorded.
 | `config.template.js` | Copy to `config.js` and fill. The only file you edit per event. |
 | `Code.gs` | Apps Script backend. Only the configuration block at the top changes per event. |
 | `appsscript.json` | Apps Script manifest. Only `timeZone` changes, per event. |
+| `Diagnostics.gs` | Optional. Paste beside `Code.gs`; answers what `selfTest()` cannot. |
 | `tests/` | Regression tests for the engine. No dependencies. |
 
 ## Checking a change
 
 ```
-node tests/filters-and-priority.test.js
+node tests/engine.test.js && node tests/filters-and-priority.test.js
 ```
 
-No dependencies and no DOM: `model.js` and `ui.js` are string templates over plain
-objects, so every screen can be rendered over invented people in a Node `vm` and
-read as text. The people in the tests are invented. Never put a real one there.
+135 assertions, no dependencies, no DOM, no network. `model.js` is pure functions
+and `ui.js` is string templates over them, so every screen can be rendered over
+invented people in a Node `vm` and read back as text — which is what lets a build
+be checked on a laptop without a phone, a Sheet or a single real guest.
+
+`engine.test.js` covers the phases (including an evening that runs past midnight,
+which a "is it today?" test gets wrong every time), met state, firms, assignment,
+filters, order, search, the freeze, and every screen rendering. Both files build
+their own throwaway configuration rather than reading `config.js`, so they test
+the engine and not whichever event is checked in.
+
+The people in them are invented. Never put a real one there.
+
+## Debugging the Sheet
+
+`Diagnostics.gs` is optional. Paste it into the bound Apps Script project as a
+second file, next to `Code.gs`, and run a function from the editor: it needs no
+deployment and writes nothing.
+
+It answers what `selfTest()` cannot. `selfTest()` tells you a column resolved;
+these tell you whether what is in it reaches anybody — which rows the app drops
+and why, how many ownership values match no user, which two rows are one person.
+Two places are marked `EDIT` for the event.
+
+It logs row numbers and column names, never cell values, so its output is safe
+to paste into a chat or a ticket. That is the point: debugging a count should not
+mean pulling the whole guest list into a conversation.
 
 ## State of this repo
 
