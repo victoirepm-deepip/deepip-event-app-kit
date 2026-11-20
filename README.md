@@ -34,7 +34,7 @@ it is where the field lessons from Munich and Budapest are recorded.
 ## Checking a change
 
 ```
-node tests/engine.test.js && node tests/filters-and-priority.test.js
+node tests/engine.test.js && node tests/filters-and-priority.test.js && node tests/capture-form.test.js
 ```
 
 135 assertions, no dependencies, no DOM, no network. `model.js` is pure functions
