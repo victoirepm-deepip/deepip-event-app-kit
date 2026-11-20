@@ -313,7 +313,32 @@ document.addEventListener("click", async e => {
   if (act === "toggle-list")  { await App.saveProfile({ hasList: el.checked }); App.filters = el.checked ? ["mine"] : []; App.render(); return; }
 });
 
+/* ---- dictation -----------------------------------------------------------
+   Reported from the floor at Paris on 19 Nov 2026: someone holds the keyboard
+   microphone, speaks, and the words go out of sight. The field has a fixed
+   height, so as the transcript grows the caret leaves the visible box; and the
+   keyboard shrinks the visual viewport, so the page scrolls to chase the caret
+   and takes the field with it. The person is talking into nothing.
+
+   Two lines fix it: size the field to what it holds, and scroll it back into
+   view if it has left. `block: "nearest"` does nothing when the field is
+   already visible, which is almost always, so this is not a jumpy page.
+
+   Typing does not reproduce any of this. Test it by dictating, on a phone. */
+function growField(el) {
+  if (!el || el.tagName !== "TEXTAREA") return;
+  el.style.height = "auto";
+  const cap = Math.round((window.innerHeight || 600) * 0.4);
+  el.style.height = Math.min(el.scrollHeight, cap) + "px";
+  el.scrollIntoView({ block: "nearest" });
+}
+
+// focusin bubbles where focus does not: this sizes a field that already holds a
+// draft, the moment it is tapped.
+document.addEventListener("focusin", e => growField(e.target));
+
 document.addEventListener("input", e => {
+  growField(e.target);
   if (e.target.id === "q") {
     App.query = e.target.value;
     document.getElementById("results").innerHTML = UI.searchResults(App);

@@ -182,7 +182,10 @@ h1,h2,h3{margin:0}
 .opt-on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:650}
 .hook{display:block;color:var(--fg3);font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:18px}
 .hook textarea{display:block;width:100%;margin-top:8px;padding:13px 12px;border-radius:10px;border:1px solid var(--line);
-  background:var(--bg2);color:var(--fg);font-size:17px;font-family:inherit;text-transform:none;letter-spacing:0}
+  background:var(--bg2);color:var(--fg);font-size:17px;font-family:inherit;text-transform:none;letter-spacing:0;
+  /* Grown to its content by growField() in app.js, and capped here so a long
+     dictation cannot push the Save button off the screen. */
+  max-height:40vh;overflow-y:auto;resize:vertical}
 /* typed extra fields (CAPTURE_EXTRA), same look as the hook */
 .extra{display:block;color:var(--fg3);font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:18px}
 .extra input{display:block;width:100%;margin-top:8px;padding:13px 12px;border-radius:10px;border:1px solid var(--line);
